@@ -1,11 +1,30 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import Table from "../components/Table.js";
 
+const SearchBox = ({ setKeyword }) => {
+  const inputRef = useRef(); // input 값 가져올 때 useState 이용할 경우 딜레이 발생 -> 안전하게 ref로
+
+  const onSearch = (e) => {
+    e.preventDefault();
+    setKeyword(inputRef.current.value);
+  };
+
+  return (
+    <form className="search" onSubmit={onSearch}>
+      <input type="text" ref={inputRef} />
+      <button>검색!</button>
+    </form>
+  );
+};
+
 const Main = () => {
+  const [keyword, setKeyword] = useState("");
+
   return (
     <>
       <p>메인페이지</p>
-      <Table data={data} header={header} />
+      <SearchBox setKeyword={setKeyword} />
+      <Table data={data} header={header} keyword={keyword} />
     </>
   );
 };

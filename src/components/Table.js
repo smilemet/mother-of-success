@@ -9,9 +9,13 @@ const TableContainer = styled.table`
   td {
     text-align: center;
   }
+
+  p {
+    margin: 0;
+  }
 `;
 
-const Table = ({ data, header }) => {
+const Table = ({ data, header, keyword }) => {
   /** props로 받아온 데이터를 인덱싱한다. */
   const modifiedData = useMemo(() => {
     return data.map((item, index) => {
@@ -22,6 +26,22 @@ const Table = ({ data, header }) => {
 
   /** 초기값 입력 */
   const [list, setList] = useState(modifiedData);
+
+  /** 검색 결과 출력 */
+  useEffect(() => {
+    if (!keyword) return setList(modifiedData); // 검색어 없으면 초기상태로
+
+    let newList = modifiedData.filter((item) => {
+      const { id, type, name } = item;
+      const itemId = id.toString();
+      const itemType = type.toLowerCase();
+
+      if (itemId === keyword || itemType === keyword.toLowerCase() || name === keyword) return true;
+      return false;
+    });
+
+    setList(newList);
+  }, [keyword, modifiedData]);
 
   return (
     <TableContainer>
@@ -70,7 +90,11 @@ const PrintTableItem = ({ list }) => {
         <td>{item.id}</td>
         <td>{item.type}</td>
         <td>{item.name}</td>
-        <td>{item.description}</td>
+        <td>
+          {item.description.map((v) => {
+            return <p key={v}>{v}</p>;
+          })}
+        </td>
       </tr>
     );
   });
